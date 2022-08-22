@@ -36,11 +36,8 @@ useer = "NaN"
 
 
 def transcode(filename):
-    ffmpeg.input(filename).output(
-        "input.raw", format="s16le", acodec="pcm_s16le", ac=2, ar="48k"
-    ).overwrite_output().run()
+    ffmpeg.input(filename).output("input.raw", format='s16le', acodec='pcm_s16le', ac=2, ar='48k').overwrite_output().run() 
     os.remove(filename)
-
 
 # Convert seconds to mm:ss
 def convert_seconds(seconds):
@@ -54,7 +51,7 @@ def convert_seconds(seconds):
 # Convert hh:mm:ss to seconds
 def time_to_seconds(time):
     stringt = str(time)
-    return sum(int(x) * 60 ** i for i, x in enumerate(reversed(stringt.split(":"))))
+    return sum(int(x) * 60 ** i for i, x in enumerate(reversed(stringt.split(':'))))
 
 
 # Change image size
@@ -63,8 +60,8 @@ def changeImageSize(maxWidth, maxHeight, image):
     heightRatio = maxHeight / image.size[1]
     newWidth = int(widthRatio * image.size[0])
     newHeight = int(heightRatio * image.size[1])
-    return image.resize((newWidth, newHeight))
-
+    newImage = image.resize((newWidth, newHeight))
+    return newImage
 
 async def generate_cover(requested_by, title, views, duration, thumbnail):
     async with aiohttp.ClientSession() as session:
@@ -74,8 +71,9 @@ async def generate_cover(requested_by, title, views, duration, thumbnail):
                 await f.write(await resp.read())
                 await f.close()
 
+    
     image1 = Image.open("./background.png")
-    image2 = Image.open("resource/thumbnail.png")
+    image2 = Image.open("etc/hypermusic.png")
     image3 = changeImageSize(1280, 720, image1)
     image4 = changeImageSize(1280, 720, image2)
     image5 = image3.convert("RGBA")
@@ -83,23 +81,28 @@ async def generate_cover(requested_by, title, views, duration, thumbnail):
     Image.alpha_composite(image5, image6).save("temp.png")
     img = Image.open("temp.png")
     draw = ImageDraw.Draw(img)
-    font = ImageFont.truetype("resource/font.otf", 32)
-    draw.text((190, 550), f"Title: {title[:50]} ...", (255, 255, 255), font=font)
-    draw.text((190, 590), f"Duration: {duration}", (255, 255, 255), font=font)
-    draw.text((190, 630), f"Views: {views}", (255, 255, 255), font=font)
+    font = ImageFont.truetype("etc/hyper2.otf", 30)
+    draw.text((190, 550), f"Title: {title}", (255, 255, 255), font=font)
     draw.text(
-        (190, 670),
-        f"Powered By: Aditya Halder (@AdityaHalder)",
-        (255, 255, 255),
-        font=font,
+(190, 590), f"Duration: {duration}", (255, 255, 255), font=font
+    )
+    draw.text((190, 630), f"Views: {views}", (255, 255, 255), font=font)
+    draw.text((190, 670),
+ f"Added By: {requested_by}",
+ (255, 255, 255),
+ font=font,
     )
     img.save("final.png")
     os.remove("temp.png")
     os.remove("background.png")
 
+@Client.on_callback_query()
+def close(Client, callback: CallbackQuery):
+    if callback.data == "Close":
+        callback.message.delete()
 
 @Client.on_message(
-    commandpro(["/play", "/yt", "/ytp", "play", "yt", "ytp", "@", "#"])
+    command(["ytp", "play"])
     & filters.group
     & ~filters.edited
     & ~filters.forwarded
@@ -108,8 +111,10 @@ async def generate_cover(requested_by, title, views, duration, thumbnail):
 async def play(_, message: Message):
     global que
     global useer
-    
-    lel = await message.reply("**🔎 Sɘɑɤƈɦɩɳʛ ...**")
+    await message.delete()
+    usrid = message.from_user.mention
+
+    lel = await message.reply("❄️")
 
     administrators = await get_administrators(message.chat)
     chid = message.chat.id
@@ -117,7 +122,7 @@ async def play(_, message: Message):
     try:
         user = await USER.get_me()
     except:
-        user.first_name = "Aditya_Player"
+        user.first_name = "Angelmusic"
     usar = user
     wew = usar.id
     try:
@@ -129,24 +134,24 @@ async def play(_, message: Message):
                     invitelink = await _.export_chat_invite_link(chid)
                 except:
                     await lel.edit(
-                        "**💥 Ʌʈ🤞Fɩrsʈ 🥀 Ɱɑƙɘ ♥️ Ɱɘ ⭐ Ʌɗɱɩŋ 😎 ...**")
+                        "<b><i>sʜʜ, ɪ ᴍ ɴᴏᴛ ᴀɴ ᴀᴅᴍɪɴ ʜᴇʀᴇ ᴍᴀᴋᴇ ᴍᴇ ᴀᴅᴍɪɴ ɪɴ ᴛʜɪs ᴄʜᴀᴛ ғɪʀsᴛ ᴛᴏ ᴘʟᴀʏ sᴏɴɢs 🫠🥀</i></b>")
                     return
 
                 try:
                     await USER.join_chat(invitelink)
                     await USER.send_message(
-                        message.chat.id, "** 😎 I🤞ʌɱ 🥀 Ʀɘɑɗy ♥️ Ƭø ⭐ Ƥɭɑy 😎 ...**")
+                        message.chat.id, "**ᴀꜱꜱɪꜱᴛᴀɴᴛ ᴀᴄᴄᴏᴜɴᴛ 「@FaLLenx4ngeL」 ᴊᴏɪɴᴇᴅ ✅ ꜱᴜᴄᴄᴇꜱꜱꜰᴜʟʟʏ. ꜱᴛᴀʀᴛɪɴɢ ᴍᴜꜱɪᴄ ɴᴏᴡ 🔊**")
 
                 except UserAlreadyParticipant:
                     pass
                 except Exception:
                     await lel.edit(
-                        f"**🎸 Ƥɭɘɑsɘ ❤️ Ɱɑŋʋɑɭɭy 🥀 Ʌɗɗ 💫 Ʌssɩsʈɑŋʈ 😔 Øɤ 🎸 Ƈøŋʈɑƈʈ ❤️ ʈø : @AdityaHalder 🥀** ")
+                        f"**ᴘʟᴇᴀꜱᴇ ᴍᴀɴᴜᴀʟʟʏ ᴀᴅᴅ ᴀꜱꜱɪꜱᴛᴀɴᴛ ʜᴇʀᴇ 🙄 ᴏʀ ʀᴇᴘᴏʀᴛ ɪᴛ ᴏɴ @angelsupports 👾** ")
     try:
         await USER.get_chat(chid)
     except:
         await lel.edit(
-            f"**🎸 Ƥɭɘɑsɘ ❤️ Ɱɑŋʋɑɭɭy 🥀 Ʌɗɗ 💫 Ʌssɩsʈɑŋʈ 😔 Øɤ 🎸 Ƈøŋʈɑƈʈ ❤️ ʈø : @AdityaHalder 🥀 ...*")
+            f"**ᴘʟᴇᴀꜱᴇ ᴍᴀɴᴜᴀʟʟʏ ᴀᴅᴅ ᴀꜱꜱɪꜱᴛᴀɴᴛ ʜᴇʀᴇ 🙄 ᴏʀ ʀᴇᴘᴏʀᴛ ɪᴛ ᴏɴ @angelsupports 👾..*")
         return
     
     audio = (
@@ -159,12 +164,12 @@ async def play(_, message: Message):
     if audio:
         if round(audio.duration / 60) > DURATION_LIMIT:
             raise DurationLimitError(
-                f"**💥 Ƥɭɑy 🔊 Ɱʋsɩƈ 💿 Lɘss ⚡️\n🤟 Ƭɦɑɳ⚡️ {DURATION_LIMIT} 💞 Ɱɩɳʋʈɘ ...**"
+                f"**🧚‍♀️ ᴘʟᴀʏ ᴍᴜꜱɪᴄ ʟᴇꜱꜱ⚡️\n🤟ᴛʜᴀɴ {DURATION_LIMIT} 🕑ᴍɪɴᴜᴛᴇ 👻...**"
             )
 
         file_name = get_file_name(audio)
         title = file_name
-        thumb_name = "https://te.legra.ph/file/ed6920a2f0ab5af3fd55d.png"
+        thumb_name = "https://telegra.ph/file/e5ab22002d4f284b39f37.png"
         thumbnail = thumb_name
         duration = round(audio.duration / 60)
         views = "Locally added"
@@ -173,8 +178,12 @@ async def play(_, message: Message):
             [
                 [
                         InlineKeyboardButton(
-                            text="💥 Jøɩɳ Ɦɘɤɘ & Sʋƥƥøɤʈ 💞",
-                            url=f"https://t.me/adityadiscus")
+                            text="ꜱᴜᴘᴘᴏʀᴛ🥀",
+                            url=f"https://t.me/angelsupports")
+                        InlineKeyboardButton(
+                            text="ᴜᴘᴅᴀᴛᴇs👾",
+                            url=f"https://t.me/angel_updates"),
+               ],
 
                 ]
             ]
@@ -212,8 +221,11 @@ async def play(_, message: Message):
             [
                 [
                         InlineKeyboardButton(
-                            text="💥 Jøɩɳ Ɦɘɤɘ & Sʋƥƥøɤʈ 💞",
-                            url=f"https://t.me/adityadiscus")
+                            text="ꜱᴜᴘᴘᴏʀᴛ🥀",
+                            url=f"https://t.me/angelsupports")
+                        InlineKeyboardButton(
+                            text="ᴜᴘᴅᴀᴛᴇs👾",
+                            url=f"https://t.me/angel_updates"),
 
                 ]
             ]
@@ -221,15 +233,18 @@ async def play(_, message: Message):
 
         except Exception as e:
             title = "NaN"
-            thumb_name = "https://te.legra.ph/file/ed6920a2f0ab5af3fd55d.png"
+            thumb_name = "https://telegra.ph/file/e5ab22002d4f284b39f37.png"
             duration = "NaN"
             views = "NaN"
             keyboard = InlineKeyboardMarkup(
             [
                 [
                         InlineKeyboardButton(
-                            text="💥 Jøɩɳ Ɦɘɤɘ & Sʋƥƥøɤʈ 💞",
-                            url=f"https://t.me/adityadiscus")
+                            text="ꜱᴜᴘᴘᴏʀᴛ🥀",
+                            url=f"https://t.me/angelsupports")
+                        InlineKeyboardButton(
+                            text="ᴜᴘᴅᴀᴛᴇs👾",
+                            url=f"https://t.me/angel_updates"),
 
                 ]
             ]
@@ -237,7 +252,7 @@ async def play(_, message: Message):
 
         if (dur / 60) > DURATION_LIMIT:
             await lel.edit(
-                f"**💥 Ƥɭɑy 🔊 Ɱʋsɩƈ 💿 Lɘss ⚡️\n🤟 Ƭɦɑɳ⚡️ {DURATION_LIMIT} 💞 Ɱɩɳʋʈɘ ...**"
+                f"**🧚‍♀️ ᴘʟᴀʏ ᴍᴜꜱɪᴄ ʟᴇꜱꜱ⚡️\n🤟ᴛʜᴀɴ {DURATION_LIMIT} 🕑ᴍɪɴᴜᴛᴇ 👻...**"
             )
             return
         requested_by = message.from_user.first_name
@@ -246,9 +261,9 @@ async def play(_, message: Message):
     else:
         if len(message.command) < 2:
             return await lel.edit(
-                "**🤖 Ɠɩⱱɘ 🙃 Ɱʋsɩƈ 💿 Ɲɑɱɘ 😍\n💞 Ƭø 🔊 Ƥɭɑy 🌷...**"
+                "**ɴᴏᴛʜɪɴɢ ꜰᴏᴜɴᴅ ᴄʜᴇᴄᴋ ᴛʜᴇ ꜱᴏɴɢ ɴᴀᴍᴇ ᴀɴᴅ ᴛʀʏ ᴀɢᴀɪɴ🫤❗️...**"
             )
-        await lel.edit("**🔄 Ƥɤøƈɘssɩɳʛ ...**")
+        await lel.edit("**☆ ʙᴇᴇᴘ ʙᴏᴏᴘ ⚡️☘️ ʙᴇᴇᴘ ʙᴏᴏᴘ ☆**")
         query = message.text.split(None, 1)[1]
         # print(query)
         try:
@@ -273,7 +288,7 @@ async def play(_, message: Message):
 
         except Exception as e:
             await lel.edit(
-                "**🔊 Ɱʋsɩƈ 😕 Ɲøʈ 📵 Føʋɳɗ❗️\n💞 Ƭɤy ♨️ Ʌɳøʈɦɘɤ 🌷...**"
+                "**ɴᴏᴛʜɪɴɢ ꜰᴏᴜɴᴅ ᴄʜᴇᴄᴋ ᴛʜᴇ ꜱᴏɴɢ ɴᴀᴍᴇ ᴀɴᴅ ᴛʀʏ ᴀɢᴀɪɴ🫤❗️...**"
             )
             print(str(e))
             return
@@ -282,8 +297,11 @@ async def play(_, message: Message):
             [
                 [
                         InlineKeyboardButton(
-                            text="💥 Jøɩɳ Ɦɘɤɘ & Sʋƥƥøɤʈ 💞",
-                            url=f"https://t.me/adityadiscus")
+                            text="ꜱᴜᴘᴘᴏʀᴛ🥀",
+                            url=f"https://t.me/angelsupports")
+                        InlineKeyboardButton(
+                            text="ᴜᴘᴅᴀᴛᴇs👾",
+                            url=f"https://t.me/angel_updates"),
 
                 ]
             ]
@@ -291,7 +309,7 @@ async def play(_, message: Message):
 
         if (dur / 60) > DURATION_LIMIT:
             await lel.edit(
-                f"**💥 Ƥɭɑy 🔊 Ɱʋsɩƈ 💿 Lɘss ⚡️\n🤟 Ƭɦɑɳ⚡️ {DURATION_LIMIT} 💞 Ɱɩɳʋʈɘ ...**"
+                f"**🧚‍♀️ ᴘʟᴀʏ ᴍᴜꜱɪᴄ ʟᴇꜱꜱ⚡️\n🤟ᴛʜᴀɴ {DURATION_LIMIT} 🕑ᴍɪɴᴜᴛᴇ 👻...**"
             )
             return
         requested_by = message.from_user.first_name
@@ -305,7 +323,7 @@ async def play(_, message: Message):
         position = await queues.put(chat_id, file=file_path)
         await message.reply_photo(
             photo="final.png",
-            caption="**💥 Ʌɗɩtyɑ🤞Ʌɗɗɘɗ 💿 Søɳʛ❗️\n🔊 Ʌʈ 💞 Ƥøsɩʈɩøɳ » `{}` 🌷 ...**".format(position),
+            caption="**ᴇxᴘᴀɴᴅᴇᴅ ꜱᴏɴɢ❗️\n🔊 ᴀᴛ ᴘᴏꜱɪᴛɪᴏɴ » `{}` 🌷 ...**".format(position),
             reply_markup=keyboard,
         )
     else:
@@ -322,7 +340,7 @@ async def play(_, message: Message):
         await message.reply_photo(
             photo="final.png",
             reply_markup=keyboard,
-            caption="**💥 Ʌɗɩtyɑ🤞Mʋsɩƈ 🎸 Nøω 💞\n🔊 Ƥɭɑyɩɳʛ 😍 ØƤ 🥀 ...**".format(),
+            caption="**📡 **🎧 ꜱᴛᴀʀᴛᴇᴅ ꜱᴛʀᴇᴀᴍɪɴɢ ⚡️** \n\n**ʀᴇQᴜᴇꜱᴛᴇᴅ ʙʏ 👻:{0}**".format(),
            )
 
     os.remove("final.png")
@@ -335,8 +353,8 @@ async def play(_, message: Message):
 async def pause(_, message: Message):
     await clientbot.pytgcalls.pause_stream(message.chat.id)
     await message.reply_photo(
-                             photo="https://te.legra.ph/file/f2b5739b266e05c9a2909.png", 
-                             caption="**💥 Ʌɗɩtyɑ 🔈 Mʋsɩƈ🤞Nøω 🥀\n▶️ Ƥɑʋsɘɗ 🌷 ...**"
+                             photo="https://telegra.ph/file/0a15d87b130d3cdaf2eae.png", 
+                             caption="**🎧 ᴠᴏɪᴄᴇᴄʜᴀᴛ ᴘᴀᴜꜱᴇᴅ⏸ ʙʏ {}! ...**"
     )
 
 
@@ -346,8 +364,8 @@ async def pause(_, message: Message):
 async def resume(_, message: Message):
     await clientbot.pytgcalls.resume_stream(message.chat.id)
     await message.reply_photo(
-                             photo="https://te.legra.ph/file/391e636040ae189c23cdb.png", 
-                             caption="**💥 Ʌɗɩtyɑ 🔈 Mʋsɩƈ🤞Nøω 🥀\n⏸ Ƥɭɑyɩɳʛ 🌷 ...**"
+                             photo="https://telegra.ph/file/0d144f862cfaf7d3359ec.png", 
+                             caption="**🎧 ᴠᴏɪᴄᴇᴄʜᴀᴛ ʀᴇꜱᴜᴍᴇᴅ ʙʏ{}!...**"
     )
 
 
@@ -362,7 +380,7 @@ async def skip(_, message: Message):
     for x in clientbot.pytgcalls.active_calls:
         ACTV_CALLS.append(int(x.chat_id))
     if int(chat_id) not in ACTV_CALLS:
-        await message.reply_text("**💥 Ʌɗɩtyɑ 💞 Ɲøʈɦɩɳʛ 🔇\n🚫 Ƥɭɑyɩɳʛ 🌷 ...**")
+        await message.reply_text("**ɴᴏᴛʜɪɴɢ ᴘʟᴀʏɪɴɢ ɪɴ ᴠᴏɪᴄᴇ ᴄʜᴀᴛ❗️ ʙʏᴇ ʙʏᴇ🏃‍♀️⚡️**")
     else:
         queues.task_done(chat_id)
         
@@ -380,8 +398,8 @@ async def skip(_, message: Message):
 
 
     await message.reply_photo(
-                             photo="https://te.legra.ph/file/4e92cde4f29dbecffb7a7.png", 
-                             caption=f'**💥 Ʌɗɩtyɑ 🔈 Mʋsɩƈ🤞Nøω 🥀\n⏩ Sƙɩƥƥɘɗ 🌷 ...**'
+                             photo="https://telegra.ph/file/5e5d2544627864b3952dc.png", 
+                             caption=f'**🎧 ᴠᴏɪᴄᴇᴄʜᴀᴛ ꜱᴋɪᴘᴘᴇᴅ ʙʏ{}! ...**'
    ) 
 
 
@@ -396,8 +414,8 @@ async def stop(_, message: Message):
 
     await clientbot.pytgcalls.leave_group_call(message.chat.id)
     await message.reply_photo(
-                             photo="https://te.legra.ph/file/836a1883cf1dd024f1b7e.png", 
-                             caption="**💥 Ʌɗɩtyɑ 🔈 Mʋsɩƈ🤞Nøω 🥀\n❌ Sʈøƥƥɘɗ 🌷 ...**"
+                             photo="https://telegra.ph/file/e7d1a6610fd7853709449.png", 
+                             caption="**🎧 ᴠᴏɪᴄᴇᴄʜᴀᴛ ᴇɴᴅ/ꜱᴛᴏᴘᴘᴇᴅ ʙʏ {}!...**"
     )
 
 
@@ -414,6 +432,6 @@ async def admincache(client, message: Message):
     )
 
     await message.reply_photo(
-                              photo="https://te.legra.ph/file/02306701e296bcf8634fa.png",
-                              caption="**💥 Ʌɗɩtyɑ 🔈 Mʋsɩƈ🤞Nøω 🥀\n🔥 Ʀɘɭøɑɗɘɗ 🌷 ...**"
+                              photo="https://telegra.ph/file/a6eedf275bed195c5f247.jpg",
+                              caption="**ʀᴇʟᴏᴀᴅᴇᴅ ᴀɴɢᴇʟ ꜱᴇʀᴠᴇʀ🧚‍♀️❗️...**"
     )
