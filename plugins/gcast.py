@@ -14,17 +14,17 @@ async def broadcast(_, message: Message):
     if message.from_user.id not in SUDO_USERS:
         return
     else:
-        wtf = await message.reply("`Stɑɤtɩŋʛ Ɓɤøɑɗƈɑst ...`")
+        wtf = await message.reply("`ɪɴɪᴛɪᴀʟɪᴢɪɴɢ ʙʀᴏᴀᴅᴄᴀꜱᴛ ɴᴏᴡ ⚡️...`")
         if not message.reply_to_message:
-            await wtf.edit("**__Ƥɭɘɑsɘ Ʀɘƥɭy Ƭø ɑ Mɘssɑʛɘ Ƭø Stɑɤt Ɓɤøɑɗƈɑst ...__**")
+            await wtf.edit("**__ᴘʟᴇᴀꜱᴇ ʀᴇᴘʟʏ ᴛᴏ ᴀ ᴍᴇꜱꜱᴀɢᴇ ᴛᴏ ʙʀᴏᴀᴅᴄᴀꜱᴛ 🫡__**")
             return
         lmao = message.reply_to_message.text
         async for dialog in aditya.iter_dialogs():
             try:
                 await aditya.send_message(dialog.chat.id, lmao)
                 sent = sent+1
-                await wtf.edit(f"`Ɓɤøɑɗƈɑstɩŋʛ` \n\n**Sɘŋt Ƭø:** `{sent}` Ƈɦɑts \n**Fɑɩɭɘɗ Iŋ:** {failed} chats")
+                await wtf.edit(f"`📢 ʙʀᴏᴀᴅᴄᴀꜱᴛɪɴɢ  \n\n**ꜱᴇɴᴛ ᴛᴏ** `{sent}` ᴄʜᴀᴛꜱ💬\n**ꜰᴀɪʟᴇᴅ ɪɴ😶‍🌫️:** {failed} chats")
                 await asyncio.sleep(3)
             except:
                 failed=failed+1
-        await message.reply_text(f"`Ɠƈɑst Sʋƈƈɘssfʋɭɭy` \n\n**Sɘŋt Ƭø:** `{sent}` Ƈɦɑts \n**Fɑɩɭɘɗ Iŋ:** {failed} Ƈɦɑts")
+        await message.reply_text(f"`ɢᴄᴀꜱᴛ ꜱᴜᴄᴇꜱꜱꜰᴜʟʟʏ 🥳` \n\n**ꜱᴇɴᴛ ᴛᴏ:** `{sent}` ᴄʜᴀᴛꜱ💬 \n**ꜰᴀɪʟᴇᴅ ɪɴ😶‍🌫️:** {failed} Ƈɦɑts")
